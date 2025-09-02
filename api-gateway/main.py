@@ -3,7 +3,7 @@ from fastapi import FastAPI
 app = FastAPI()
 
 
-@app.post("/jobs")
+@app.post("/create_job")
 async def create_job() -> dict:
     """Accept a new video generation job.
 

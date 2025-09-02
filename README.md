@@ -5,6 +5,7 @@ Tool for auto generation video
 
 - `api-gateway/`: FastAPI entrypoint for job submission.
 - `orchestrator/`: Celery worker that coordinates job processing.
+- `scenario-service/`: ChatGPT service for scenario.
 - `image-service/`: Stable Diffusion image generation service.
 - `tts-service/`: Text-to-speech generation service.
 - `video-composer/`: FFmpeg-based video assembly.
