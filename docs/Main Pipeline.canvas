@@ -1,0 +1,14 @@
+{
+	"nodes":[
+		{"id":"09b8184e1b781765","type":"text","text":"[[orchestrator]]","x":-215,"y":440,"width":250,"height":60,"color":"1"},
+		{"id":"c7daf7f50ace780c","type":"text","text":"[[api-gateway|API]]","x":-215,"y":220,"width":250,"height":60,"color":"1"},
+		{"id":"73f5b8756ee40737","type":"text","text":"All communication through [[broker]]","x":-233,"y":60,"width":287,"height":56},
+		{"id":"b2a92f791f02e8c8","type":"text","text":"1. Generate [[Scenario]]\n2. Divides the [[Scenario]] into [[Episode]]\n3. Divides the [[Episode]] into [[Sequence]]\n4. Divides the [[Sequence]] into [[Shot]]","x":-135,"y":620,"width":340,"height":160,"color":"5"},
+		{"id":"895df3bcdee6cfd6","type":"text","text":"[[scenario-service]]","x":35,"y":880,"width":250,"height":60,"color":"1"}
+	],
+	"edges":[
+		{"id":"88d3541c3ca8c151","fromNode":"c7daf7f50ace780c","fromSide":"bottom","toNode":"09b8184e1b781765","toSide":"top","label":"Get project info"},
+		{"id":"06369b2204d4209b","fromNode":"09b8184e1b781765","fromSide":"bottom","toNode":"b2a92f791f02e8c8","toSide":"top","toEnd":"none"},
+		{"id":"51de9e33de27ae0b","fromNode":"b2a92f791f02e8c8","fromSide":"bottom","toNode":"895df3bcdee6cfd6","toSide":"top","toEnd":"none"}
+	]
+}
