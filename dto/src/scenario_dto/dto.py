@@ -7,19 +7,23 @@ from uuid import UUID
 
 
 class HierarchyId(abc.ABC, BaseModel):
-    pattern_str: ClassVar[str] = ""
-    segment: ClassVar[str] = ""
-    sep: ClassVar[str] = "-"
-    regexp: ClassVar[Pattern[str]]
+    _pattern_str: ClassVar[str] = ""
+    _sep: ClassVar[str] = "-"
+    _regexp: ClassVar[Pattern[str]]
     model_config = {"extra": "forbid"}
-    all_descendants_info: ClassVar[list[type[HierarchyId]]] = []
+    _all_children: ClassVar[list[type[HierarchyId]]] = []
 
     def __init_subclass__(cls, **kw):
         super().__init_subclass__(**kw)
-        base = getattr(super(cls, cls), "pattern_str", "")
-        seg = getattr(cls, "segment", "")
-        cls.pattern_str = seg if not base else (base + (cls.sep + seg if seg else ""))
-        cls.regexp = re.compile(rf"^{cls.pattern_str}$")
+        base = getattr(super(cls, cls), "_pattern_str", "")
+        seg = cls._segment()
+        cls._pattern_str = seg if not base else (base + (cls._sep + seg if seg else ""))
+        cls._regexp = re.compile(rf"^{cls._pattern_str}$")
+
+    @classmethod
+    @abc.abstractmethod
+    def _segment(cls) -> str:
+        return ""
 
     @abc.abstractmethod
     def __str__(self) -> str:
@@ -40,28 +44,32 @@ class HierarchyId(abc.ABC, BaseModel):
     @classmethod
     def _err(cls, value: str) -> NoReturn:
         try:
-            expected = cls.regexp.pattern
+            expected = cls._regexp.pattern
         except Exception: # pylint: disable=broad-except
             expected = "|".join(
-                t.regexp.pattern for t in cls.all_descendants_info
+                t._regexp.pattern for t in cls._all_children
             )
         raise ValueError(f"Invalid {cls.__name__}: expected '{expected}', got '{value}'")
 
     @classmethod
     def parse(cls, s: str) -> HierarchyId | ValueError:
-        for t in cls.all_descendants_info:
-            if t.regexp.fullmatch(s):
+        for t in cls._all_children:
+            if t._regexp.fullmatch(s):
                 return t.from_str(s)
         cls._err(s)
 
 
 class ProjectId(HierarchyId):
-    segment = r"Pr(\d+)"
     project: int = Field(ge=0)
 
     @classmethod
+    def _segment(cls) -> str:
+        return r"Pr(\d+)"
+
+
+    @classmethod
     def from_str(cls, s: str) -> ProjectId:
-        m = cls.regexp.fullmatch(s)
+        m = cls._regexp.fullmatch(s)
         if not m: cls._err(s)
         return cls(project=int(m.group(1)))
 
@@ -70,12 +78,15 @@ class ProjectId(HierarchyId):
 
 
 class EpisodeId(ProjectId):
-    segment = r"Ep(\d+)"
     episode: int = Field(ge=0)
 
     @classmethod
+    def _segment(cls) -> str:
+        return r"Ep(\d+)"
+
+    @classmethod
     def from_str(cls, s: str) -> "EpisodeId":
-        m = cls.regexp.fullmatch(s)
+        m = cls._regexp.fullmatch(s)
         if not m: cls._err(s)
         return cls(project=int(m.group(1)), episode=int(m.group(2)))
 
@@ -87,12 +98,15 @@ class EpisodeId(ProjectId):
 
 
 class SequenceId(EpisodeId):
-    segment = r"Seq(\d+)"
     sequence: int = Field(ge=0)
 
     @classmethod
+    def _segment(cls) -> str:
+        return r"Seq(\d+)"
+
+    @classmethod
     def from_str(cls, s: str) -> "SequenceId":
-        m = cls.regexp.fullmatch(s)
+        m = cls._regexp.fullmatch(s)
         if not m: cls._err(s)
         return cls(project=int(m.group(1)), episode=int(m.group(2)), sequence=int(m.group(3)))
 
@@ -104,12 +118,15 @@ class SequenceId(EpisodeId):
 
 
 class ShotId(SequenceId):
-    segment = r"Sh(\d+)"
     shot: int = Field(ge=0)
 
     @classmethod
+    def _segment(cls) -> str:
+        return r"Sh(\d+)"
+
+    @classmethod
     def from_str(cls, s: str) -> "ShotId":
-        m = cls.regexp.fullmatch(s)
+        m = cls._regexp.fullmatch(s)
         if not m: cls._err(s)
         return cls(
             project=int(m.group(1)),
@@ -166,4 +183,4 @@ class ProjectDTO(Storyboard):
     hierarchy_id: ProjectId
 
 
-HierarchyId.all_descendants_info = HierarchyId.all_descendants()
+HierarchyId._all_children = HierarchyId.all_descendants()
