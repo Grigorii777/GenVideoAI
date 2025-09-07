@@ -12,7 +12,7 @@ class HierarchyId(abc.ABC, BaseModel):
     sep: ClassVar[str] = "-"
     regexp: ClassVar[Pattern[str]]
     model_config = {"extra": "forbid"}
-    all_descendants_info: ClassVar[list[HierarchyId]] = []
+    all_descendants_info: ClassVar[list[type[HierarchyId]]] = []
 
     def __init_subclass__(cls, **kw):
         super().__init_subclass__(**kw)
@@ -62,7 +62,7 @@ class ProjectId(HierarchyId):
     @classmethod
     def from_str(cls, s: str) -> ProjectId:
         m = cls.regexp.fullmatch(s)
-        if not m: raise cls._err(s)
+        if not m: cls._err(s)
         return cls(project=int(m.group(1)))
 
     def __str__(self) -> str:
@@ -76,7 +76,7 @@ class EpisodeId(ProjectId):
     @classmethod
     def from_str(cls, s: str) -> "EpisodeId":
         m = cls.regexp.fullmatch(s)
-        if not m: raise cls._err(s)
+        if not m: cls._err(s)
         return cls(project=int(m.group(1)), episode=int(m.group(2)))
 
     def __str__(self) -> str:
@@ -93,7 +93,7 @@ class SequenceId(EpisodeId):
     @classmethod
     def from_str(cls, s: str) -> "SequenceId":
         m = cls.regexp.fullmatch(s)
-        if not m: raise cls._err(s)
+        if not m: cls._err(s)
         return cls(project=int(m.group(1)), episode=int(m.group(2)), sequence=int(m.group(3)))
 
     def __str__(self) -> str:
@@ -110,7 +110,7 @@ class ShotId(SequenceId):
     @classmethod
     def from_str(cls, s: str) -> "ShotId":
         m = cls.regexp.fullmatch(s)
-        if not m: raise cls._err(s)
+        if not m: cls._err(s)
         return cls(
             project=int(m.group(1)),
             episode=int(m.group(2)),
