@@ -1,40 +1,23 @@
+[build-system]
+requires = ["poetry-core>=1.7.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
-name = "dto"
+name = "genvideo-dto"
 version = "0.1.0"
-description = ""
-authors = ["Grisha <you@example.com>"]
+description = "Shared DTO models"
+authors = ["You <you@example.com>"]
 readme = "README.md"
-packages = [{ include = "scenario_service", from = "src" }]
-requires-python = ">=3.12,<3.13"
+packages = [{ include = "dto", from = "src" }]  # <-- ключевая строка
 
 [tool.poetry.dependencies]
-python = ">=3.12,<3.13"
-openai = "^1.40.0"
-python-dotenv = "^1.0.1"
-pydantic = "^2.8.0"
+python = "^3.12"
+pydantic = "^2.11"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.2.0"
-pytest-cov = "^5.0.0"
-mypy = "^1.10.0"
-ruff = "^0.5.0"
+pytest = "^8.3"
+pytest-mock = "^3.14"
 
 [tool.pytest.ini_options]
-minversion = "8.0"
-testpaths = ["tests"]
+testpaths = ["dto/tests"]
 addopts = "-q"
-pythonpath = ["src"]
-
-[tool.mypy]
-python_version = "3.12"
-packages = ["dto"]
-warn_unused_ignores = true
-strict = true
-
-[tool.ruff]
-line-length = 100
-target-version = "py312"
-
-[build-system]
-requires = ["poetry-core>=1.8.0"]
-build-backend = "poetry.core.masonry.api"

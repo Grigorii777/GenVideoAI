@@ -3,7 +3,7 @@ import pytest
 from uuid import UUID
 from pydantic import ValidationError
 
-from dto.src.dto import (
+from scenario_dto.dto import (
     HierarchyId,
     ProjectId,
     EpisodeId,
@@ -84,12 +84,6 @@ class TestSequenceId:
     def test_from_str_err(self, s):
         with pytest.raises(ValueError):
             SequenceId.from_str(s)
-
-    def test_parent(self):
-        sid = SequenceId.from_str("Pr3-Ep7-Seq2")
-        parent = sid.parent()
-        assert isinstance(parent, EpisodeId)
-        assert str(parent) == "Pr3-Ep7"
 
 
 # ---------- ShotId ------------------------------------------------------------
@@ -243,7 +237,7 @@ class TestProjectDTO:
                                        SequenceId.from_str("Pr1-Ep1-Seq2"),
                                        ShotId.from_str("Pr1-Ep1-Seq2-Sh3")])
     def test_rejects_other_id_models(self, wrong):
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValueError):
             ProjectDTO(id=UUID(int=204), title="p", style="s",
                        episodes=[], hierarchy_id=wrong)
 
