@@ -1,5 +1,6 @@
 from __future__ import annotations
 import abc, re
+from functools import lru_cache
 from typing import ClassVar, Pattern, List, NoReturn
 from pydantic import BaseModel, Field, field_validator
 from uuid import UUID
@@ -10,6 +11,8 @@ class HierarchyId(abc.ABC, BaseModel):
     segment: ClassVar[str] = ""
     sep: ClassVar[str] = "-"
     regexp: ClassVar[Pattern[str]]
+    model_config = {"extra": "forbid"}
+    all_descendants_info: ClassVar[list[HierarchyId]] = []
 
     def __init_subclass__(cls, **kw):
         super().__init_subclass__(**kw)
@@ -18,8 +21,17 @@ class HierarchyId(abc.ABC, BaseModel):
         cls.pattern_str = seg if not base else (base + (cls.sep + seg if seg else ""))
         cls.regexp = re.compile(rf"^{cls.pattern_str}$")
 
+    @abc.abstractmethod
     def __str__(self) -> str:
         return ""
+
+    @classmethod
+    def all_descendants(cls):
+        res = []
+        for sub in cls.__subclasses__():
+            res.append(sub)
+            res.extend(sub.all_descendants())
+        return res
 
     @classmethod
     @abc.abstractmethod
@@ -31,16 +43,16 @@ class HierarchyId(abc.ABC, BaseModel):
             expected = cls.regexp.pattern
         except Exception: # pylint: disable=broad-except
             expected = "|".join(
-                t.regexp.pattern for t in (ProjectId, EpisodeId, SequenceId, ShotId)
+                t.regexp.pattern for t in cls.all_descendants_info
             )
         raise ValueError(f"Invalid {cls.__name__}: expected '{expected}', got '{value}'")
 
     @classmethod
     def parse(cls, s: str) -> HierarchyId | ValueError:
-        for t in (ShotId, SequenceId, EpisodeId, ProjectId):
+        for t in cls.all_descendants_info:
             if t.regexp.fullmatch(s):
                 return t.from_str(s)
-        raise cls._err(s)
+        cls._err(s)
 
 
 class ProjectId(HierarchyId):
@@ -57,18 +69,21 @@ class ProjectId(HierarchyId):
         return f"Pr{self.project}"
 
 
-class EpisodeId(HierarchyId):
+class EpisodeId(ProjectId):
     segment = r"Ep(\d+)"
     episode: int = Field(ge=0)
 
     @classmethod
-    def from_str(cls, s: str) -> EpisodeId:
+    def from_str(cls, s: str) -> "EpisodeId":
         m = cls.regexp.fullmatch(s)
         if not m: raise cls._err(s)
-        return cls(episode=int(m.group(1)))
+        return cls(project=int(m.group(1)), episode=int(m.group(2)))
 
     def __str__(self) -> str:
-        return f"Ep{self.episode}"
+        return f"{super().__str__()}-Ep{self.episode}"
+
+    def parent(self) -> ProjectId:
+        return ProjectId(project=self.project)
 
 
 class SequenceId(EpisodeId):
@@ -76,16 +91,16 @@ class SequenceId(EpisodeId):
     sequence: int = Field(ge=0)
 
     @classmethod
-    def from_str(cls, s: str) -> SequenceId:
+    def from_str(cls, s: str) -> "SequenceId":
         m = cls.regexp.fullmatch(s)
         if not m: raise cls._err(s)
-        return cls(episode=int(m.group(1)), sequence=int(m.group(2)))
+        return cls(project=int(m.group(1)), episode=int(m.group(2)), sequence=int(m.group(3)))
 
     def __str__(self) -> str:
         return f"{super().__str__()}-Seq{self.sequence}"
 
     def parent(self) -> EpisodeId:
-        return EpisodeId(episode=self.episode)
+        return EpisodeId(project=self.project, episode=self.episode)
 
 
 class ShotId(SequenceId):
@@ -93,16 +108,21 @@ class ShotId(SequenceId):
     shot: int = Field(ge=0)
 
     @classmethod
-    def from_str(cls, s: str) -> ShotId:
+    def from_str(cls, s: str) -> "ShotId":
         m = cls.regexp.fullmatch(s)
         if not m: raise cls._err(s)
-        return cls(episode=int(m.group(1)), sequence=int(m.group(2)), shot=int(m.group(3)))
+        return cls(
+            project=int(m.group(1)),
+            episode=int(m.group(2)),
+            sequence=int(m.group(3)),
+            shot=int(m.group(4)),
+        )
 
     def __str__(self) -> str:
         return f"{super().__str__()}-Sh{self.shot}"
 
     def parent(self) -> SequenceId:
-        return SequenceId(episode=self.episode, sequence=self.sequence)
+        return SequenceId(project=self.project, episode=self.episode, sequence=self.sequence)
 
 
 class Storyboard(abc.ABC, BaseModel):
@@ -118,10 +138,12 @@ class Storyboard(abc.ABC, BaseModel):
         if type(v) is target:
             return v
         if isinstance(v, HierarchyId):
-            raise TypeError(f"Expected {target.__name__}, got {type(v).__name__}")
+            raise ValueError(f"Expected {target.__name__}, got {type(v).__name__}")
         if isinstance(v, str):
             return target.from_str(v.strip())
-        raise TypeError(f"hierarchy_id must be {target.__name__} | str")
+        if isinstance(v, dict):
+            return target(**v)
+        raise ValueError(f"hierarchy_id must be {target.__name__} | str | dict")
 
 
 class ShotDTO(Storyboard):
@@ -139,6 +161,9 @@ class EpisodeDTO(Storyboard):
     hierarchy_id: EpisodeId
 
 
-class ProjectDTO(BaseModel):
+class ProjectDTO(Storyboard):
     episodes: List[EpisodeDTO]
     hierarchy_id: ProjectId
+
+
+HierarchyId.all_descendants_info = HierarchyId.all_descendants()
