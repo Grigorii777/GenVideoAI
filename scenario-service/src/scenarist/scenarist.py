@@ -1,9 +1,12 @@
 import asyncio
 import json
+from pathlib import Path
 from pprint import pprint
 from typing import Any
-from uuid import UUID, uuid4
+from uuid import uuid4
 from copy import copy
+
+import yaml
 
 from gpt_api.chatgpt_api import ChatGPTAPIAsync
 from entities.entities import ProjectEntity
@@ -16,190 +19,87 @@ def deep_exclude_key(obj: Any, key: str) -> Any:
         return [deep_exclude_key(v, key) for v in obj]
     return obj
 
-data_base = ProjectEntity.example().model_dump()
-data = deep_exclude_key(data_base, "id")
-json_scenario_schema = deep_exclude_key(data, "hierarchy_id")
+def get_json_scheme_example():
+    data_base = ProjectEntity.example().model_dump()
+    data = deep_exclude_key(data_base, "id")
+    json_scenario_schema = deep_exclude_key(data, "hierarchy_id")
+    return json_scenario_schema
 
 
 class ScenarioGenerator:
-    async def gen(self, theme: str, style: str, duration: int, lang="ru", schema: dict = None):
+    entities = ["episodes", "sequences", "shots"]
+
+    async def _gen(self, theme: str, style: str, duration: int, lang="ru", schema: dict = None):
         role = f"""
-                Ты — сценарист для учебно-развлекательных роликов. Строго соблюдай JSON-схему ответа.
-                Требования:
-                1) Возвращай ТОЛЬКО валидный JSON без пояснений и Markdown.
-                2) Лёгкая, понятная подача. Кадр (shot) — 1–3 предложения.
-                4) Сохраняй иерархию: project -> episodes → sequences → shots.
-                6) Не добавляй поля вне схемы.
-                Схема:
+                You are a scriptwriter for educational and entertainment videos. 
+                Strictly adhere to the JSON response schema.
+                Requirements:
+                1) Return ONLY valid JSON without explanations and Markdown.
+                2) Maintain the hierarchy:  project -> episodes -> sequences -> shots
+                    In each project there are episodes; 
+                    in each episode there are 3–7 sequences; 
+                    in each sequence there are 5–10 shots; 
+                    in each shot there are 3–5 text sentences.
+                3) Do not add fields outside the schema.
+                4) Language: {lang}
+                Scheme:
                     {str(schema)}
                 """
-        api = ChatGPTAPIAsync(gpt_role=role)
+        api = ChatGPTAPIAsync(gpt_role=role, timeout=200)
         prompt = f"""
-                Тема: {theme}
-                Стиль/референс: {style}
-                Продолжительность в секундах чтения вслух: {duration}
+                Topic: {theme}
+                Style/reference: {style}
+                Create text in shots for {duration} seconds of aloud reading 
                 """
         res = await api.ask(prompt)
         return res
 
+    def _update_dict_fields(self, data: dict, path: dict | None = None, id_factory=uuid4) -> None:
+        """
+        Mutates `data`:
+          - sets data["id"] = id_factory()
+          - sets data["hierarchy_id"] = copy of the current path (project/episode/sequence/shot)
+          - recursively traverses one found child type from l and adds the path to the index
+        """
+        if path is None:
+            path = {"project": 0}  # root
+
+        data["id"] = id_factory()
+        data["hierarchy_id"] = copy(path)
+
+        # looking for what type of children this node has
+        for child_key in self.entities:
+            children = data.get(child_key)
+            if isinstance(children, list):
+                singular = child_key[:-1]  # episodes->episode, sequences->sequence, shots->shot
+                for idx, child in enumerate(children):
+                    next_path = copy(path)
+                    next_path[singular] = idx
+                    self._update_dict_fields(child, next_path, id_factory)
+                break  # A node can only have one type of children.
+
+    async def gen(self, theme: str, style: str, duration: int, lang="ru", schema: dict = None, is_backup: bool = False, file_path: str = "ans.yaml"):
+        if not is_backup:
+            ans = await self._gen(theme, style, duration, schema=schema, lang=lang)
+            data = json.loads(ans)
+            self._update_dict_fields(data)
+        else:
+            data = yaml.safe_load(Path(file_path).read_text(encoding="utf-8"))
+
+        model_data = ProjectEntity.model_validate(data)
+        return model_data
+
+    async def gen_to_file(self, theme: str, style: str, duration: int, lang="ru", schema: dict = None, file_path: str = "ans.yaml"):
+        ans = await self.gen(theme, style, duration, schema=schema, lang=lang)
+
+        data = ans.model_dump(mode="json")
+        with open(file_path, "w", encoding="utf-8") as f:
+            yaml.safe_dump(data, f, allow_unicode=True, sort_keys=False)
+
 
 s_gen = ScenarioGenerator()
-ans = asyncio.run(s_gen.gen("Римская империя", "Документальный", 30, schema=json_scenario_schema))
+# asyncio.run(s_gen.gen_to_file("Roman Empire", "Documentary", 600, schema=get_json_scheme_example()))
 
-data = json.loads(ans)
+a = asyncio.run(s_gen.gen("Roman Empire", "Documentary", 30, schema=get_json_scheme_example(), is_backup=True))
+pprint(a.model_dump(mode="json"))
 
-l = ["episodes", "sequences", "shots"]
-
-def enrich_inplace(data: dict, path: dict | None = None, id_factory=uuid4) -> None:
-    """
-    Mutates `data`:
-      - sets data["id"] = id_factory()
-      - sets data["hierarchy_id"] = copy of the current path (project/episode/sequence/shot)
-      - recursively traverses one found child type from l and adds the path to the index
-    """
-    if path is None:
-        path = {"project": 0}  # root
-
-    data["id"] = id_factory()
-    data["hierarchy_id"] = copy(path)
-
-    # looking for what type of children this node has
-    for child_key in l:
-        children = data.get(child_key)
-        if isinstance(children, list):
-            singular = child_key[:-1]  # episodes->episode, sequences->sequence, shots->shot
-            for idx, child in enumerate(children):
-                next_path = copy(path)
-                next_path[singular] = idx
-                enrich_inplace(child, next_path, id_factory)
-            break  # A node can only have one type of children.
-
-enrich_inplace(data)
-pprint(data)
-
-data2 = ProjectEntity.model_validate(data)
-print(data2)
-
-
-# ans = """
-# {
-# "title": "Римская империя — сценарий на 5 минут",
-# "style": "Докудрама; умеренный темп; торжественная дикция; фон: шаги легионеров, гул форума, лёгкие струнные",
-# "episodes": [
-# {
-# "title": "От Республики к власти одного",
-# "style": "Политическая драма; сдержанная напряжённость",
-# "sequences": [
-# {
-# "title": "Закат Республики",
-# "style": "Информативный, хронологический",
-# "shots": [
-# {
-# "title": "Рим на перепутье",
-# "style": "Сдержанный репортаж",
-# "text": "Римская Республика разрослась от Иберии до Малой Азии, но сила легионов обернулась слабостью институтов. Земельные конфликты, амбиции полководцев, покупные голоса. Сенат спорит, народ смотрит на военачальников. Город живёт победами, но боится завтрашнего дня. В воздухе — вопрос: кто способен навести порядок в державе, где законы буксуют, а слава решает больше, чем выборы?"
-# },
-# {
-# "title": "Рубикон",
-# "style": "Драматический нарратив",
-# "text": "Юлий Цезарь, герой Галлии, делает шаг, который изменит мир: легионы переходят Рубикон. За ним — дисциплина и клятва, впереди — гражданская война. Сенат объявляет чрезвычайное положение, союзники и враги меняются местами. Столкнулись не только армии, но и модели власти: традиции против харизмы, коллегиальность против решающей воли одного человека."
-# }
-# ]
-# },
-# {
-# "title": "Август и новый порядок",
-# "style": "Спокойная уверенность",
-# "shots": [
-# {
-# "title": "Принципат",
-# "style": "Объяснительный тон",
-# "text": "Октавиан, принявший имя Август, сохраняет фасад Республики: консулы, сенат, народные собрания — всё на месте. Но рычаги сосредоточены в его руках: армия, финансы, провинции. Он называет это «принципатом» — власть первого среди равных. Рим получает то, чего жаждал: предсказуемость. В обмен — согласие на невидимую монархию под республиканскими терминами."
-# },
-# {
-# "title": "Мир Августа",
-# "style": "Созерцательно-торжественный",
-# "text": "Закрываются врата Януса — знак мира. Запускаются программы строительства: форумы, дороги, храмы. Поэты воспевают «золотой век», купцы прокладывают новые маршруты, ветераны получают землю. Империя учится жить без постоянной смуты. Налоги собираются ровнее, суды работают быстрее, провинции шлют зерно и металл. Начинается эпоха, которую назовут Pax Romana."
-# }
-# ]
-# }
-# ]
-# },
-# {
-# "title": "Расцвет: механизм империи",
-# "style": "Практичный тон; широкий масштаб",
-# "sequences": [
-# {
-# "title": "Легион и дорога",
-# "style": "Деловой, ритмичный",
-# "shots": [
-# {
-# "title": "Строя мир шагом строя",
-# "style": "Технический комментарий",
-# "text": "Легион — не только меч, но и лопата. Солдаты возводят лагеря за часы, мостят дороги слоями камня и песка, ставят форты на границах. По тракту из Британии в Сирию движутся курьеры, обозы, посольства. Скорость сообщения превращается в власть: приказы доходят вовремя, границы держатся, рынки получают товары в срок."
-# },
-# {
-# "title": "Дисциплина и контракт",
-# "style": "Строгий, лаконичный",
-# "text": "Служба — годы неустанной выучки, жалованье, премии, право на землю после увольнения. Когорты знают своё место в строю, центурионы — своё слово в бою. Страх наказания сочетается с честолюбием наград. Такая система создаёт армию, которая умеет не только побеждать, но и удерживать завоёванное, превращая фронт в границу, а границу — в линию торговли."
-# }
-# ]
-# },
-# {
-# "title": "Города, право, гражданство",
-# "style": "Интеллектуальный, спокойный",
-# "shots": [
-# {
-# "title": "Камень и вода",
-# "style": "Созерцательный очерк",
-# "text": "Римские города узнаваемы: форум и базилика, бани и амфитеатр, прямые улицы и канализация. Акведуки тянут воду через долины, термы собирают людей любых сословий. Город становится школой римского образа жизни: здесь учатся языку, процедурам суда, порядку очередей и расписаний. Камень фиксирует привычки, а привычки закрепляют власть."
-# },
-# {
-# "title": "Закон как сеть",
-# "style": "Разъяснительный, уверенный",
-# "text": "Римское право — язык договоров и исков, наследства и собственности. Оно формализует то, что раньше решалось кулаком. Провинциалы получают статус, торговцы — предсказуемость, судьи — прецеденты. Гражданство расширяется — сначала привилегия, потом инструмент интеграции. Когда разные народы играют по общим правилам, империя перестаёт быть только географией и становится системой."
-# }
-# ]
-# }
-# ]
-# },
-# {
-# "title": "Кризис и трансформация",
-# "style": "Собранный, без паники",
-# "sequences": [
-# {
-# "title": "Третий век: буря",
-# "style": "Напряжённый ритм",
-# "shots": [
-# {
-# "title": "Императоры на марше",
-# "style": "Репортаж из смуты",
-# "text": "Границы давят варвары, внутри — чума, инфляция, мятежи. Императоры сменяются так быстро, что монеты не успевают чеканить новый профиль. Армия снова становится путём к власти, а провинции — сценой для местных амбиций. Империя учится выживать в турбулентности: укрепляет валы, реформирует налоги, делит ответственность."
-# },
-# {
-# "title": "Диоклетиан и тетрархия",
-# "style": "Деловое изложение",
-# "text": "Диоклетиан делит верховную власть между четырьмя правителями — тетрархия. Реформирует армию, бюрократию, налогообложение; привязывает функции к территориям, повышает прозрачность управления. Да, затраты растут, но и управляемость возвращается. Империя меняет форму, чтобы сохранить содержание: масштаб требует структуры, а структура — дисциплины."
-# }
-# ]
-# },
-# {
-# "title": "Новая ось мира",
-# "style": "Размеренный, историко-философский",
-# "shots": [
-# {
-# "title": "Константин и вера",
-# "style": "Сдержанная торжественность",
-# "text": "Константин переносит столицу к Босфору и открывает новую страницу — Константинополь. Христианство выходит из тени и получает поддержку. Империя обретает иной смысл: не только право и меч, но и общая вера. Это не отменяет конфликтов, но меняет язык единства. Рим становится не столько местом, сколько идеей, связующей запад и восток."
-# },
-# {
-# "title": "Падение и наследие",
-# "style": "Спокойный эпилог",
-# "text": "В 476 году западная часть Империи исчезает с политической карты. Но дороги остаются дорогами, право — правом, города — привычкой к порядку, латинские слова — корнями многих языков. Восток будет жить ещё века. Империи смертны, системы — долговечны. Рим не кончился — он расселился внутри наших привычек к договору, расписанию и ответственности."
-# }
-# ]
-# }
-# ]
-# }
-# ]
-# }
-# """

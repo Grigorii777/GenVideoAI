@@ -67,3 +67,4 @@ class ProjectEntity(ProjectDTO):
             hierarchy_id=ProjectId(project=0),
             episodes=[EpisodeEntity.example()],
         )
+
