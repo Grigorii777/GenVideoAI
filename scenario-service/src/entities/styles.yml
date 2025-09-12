@@ -1,0 +1,38 @@
+ProjectEntity:
+  title: "Project name"
+  style: >
+    Project genre or overall atmosphere
+
+EpisodeEntity:
+  title: "Episode title"
+  style: >
+    Episode style: overall tone and mood (e.g. tense and dark),
+    editing rhythm (slow/medium/fast),
+    narration type (linear/mosaic),
+    dramatic arc (setup → escalation → climax → reflection),
+    dominant color palette and lighting.
+
+SequenceEntity:
+  title: "Sequence title"
+  style: >
+    Background music: genre/mood (ambient/orchestral/electronic),
+    tempo (BPM),
+    dynamics (crescendo/stable),
+    leading instruments,
+    volume relative to voice (-6 dB).
+    Background image: type (panorama/static/loop),
+    color palette and lighting,
+    level of movement/parallax,
+    main visual motif.
+    Transitions between shots – sharp/smooth.
+
+ShotEntity:
+  title: "Shot title"
+  style: >
+    Text: type (dialogue/monologue/voice-over),
+    speaker and addressee,
+    tone (calm/ironic/expressive),
+    pacing (short phrases/extended),
+    techniques (rhetorical question, anaphora, listing),
+    key terms; length 1–3 sentences, no filler.
+    Do not write too much in this field.
