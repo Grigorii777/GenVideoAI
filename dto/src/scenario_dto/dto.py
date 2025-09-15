@@ -142,10 +142,19 @@ class ShotId(SequenceId):
         return SequenceId(project=self.project, episode=self.episode, sequence=self.sequence)
 
 
+class ShotStyle(BaseModel):
+    voice: str
+
+
+class SequenceStyle(BaseModel):
+    image: str
+    music: str
+
+
 class Storyboard(abc.ABC, BaseModel):
     id: UUID
     title: str
-    style: str
+    style: str | ShotStyle | SequenceStyle
     hierarchy_id: HierarchyId
 
     @field_validator("hierarchy_id", mode="before")
@@ -165,21 +174,25 @@ class Storyboard(abc.ABC, BaseModel):
 
 class ShotDTO(Storyboard):
     text: str
+    style: ShotStyle
     hierarchy_id: ShotId
 
 
 class SequenceDTO(Storyboard):
     shots: List[ShotDTO]
+    style: SequenceStyle
     hierarchy_id: SequenceId
 
 
 class EpisodeDTO(Storyboard):
     sequences: List[SequenceDTO]
+    style: str
     hierarchy_id: EpisodeId
 
 
 class ProjectDTO(Storyboard):
     episodes: List[EpisodeDTO]
+    style: str
     hierarchy_id: ProjectId
 
 

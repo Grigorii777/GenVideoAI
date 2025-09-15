@@ -13,6 +13,8 @@ from scenario_dto.dto import (
     EpisodeDTO,
     SequenceDTO,
     ShotDTO,
+    ShotStyle,
+    SequenceStyle,
 )
 
 
@@ -139,7 +141,7 @@ class TestStoryboardValidator:
         dto = ShotDTO(
             id=UUID(int=1),
             title="t",
-            style="s",
+            style=ShotStyle(voice="s"),
             text="x",
             hierarchy_id=ShotId.from_str("Pr1-Ep2-Seq3-Sh4"),
         )
@@ -148,12 +150,12 @@ class TestStoryboardValidator:
     def test_shotdto_rejects_other_hierarchy_types(self):
         with pytest.raises(ValidationError, match="Expected ShotId, got SequenceId"):
             ShotDTO(
-                id=UUID(int=2), title="t", style="s", text="x",
+                id=UUID(int=2), title="t", style=ShotStyle(voice="s"), text="x",
                 hierarchy_id=SequenceId.from_str("Pr1-Ep2-Seq3"),  # type: ignore[arg-type]
             )
         with pytest.raises(ValidationError, match="Expected ShotId, got EpisodeId"):
             ShotDTO(
-                id=UUID(int=3), title="t", style="s", text="x",
+                id=UUID(int=3), title="t", style=ShotStyle(voice="s"), text="x",
                 hierarchy_id=EpisodeId.from_str("Pr1-Ep2"),  # type: ignore[arg-type]
             )
 
@@ -166,17 +168,37 @@ class TestStoryboardValidator:
         dto = ShotDTO(
             id=UUID(int=4),
             title="t",
-            style="s",
+            style=ShotStyle(voice="s"),
             text="x",
             hierarchy_id=s,  # type: ignore[arg-type]
         )
         assert isinstance(dto.hierarchy_id, ShotId)
         assert str(dto.hierarchy_id) == s
 
+    def test_shotdto_rejects_plain_style_string(self):
+        with pytest.raises(ValidationError):
+            ShotDTO(
+                id=UUID(int=5),
+                title="t",
+                style="s",  # type: ignore[arg-type]
+                text="x",
+                hierarchy_id=ShotId.from_str("Pr1-Ep2-Seq3-Sh4"),
+            )
+
+    def test_sequencedto_accepts_style_object(self):
+        dto = SequenceDTO(
+            id=UUID(int=6),
+            title="t",
+            style=SequenceStyle(image="i", music="m"),
+            shots=[],
+            hierarchy_id=SequenceId.from_str("Pr1-Ep2-Seq3"),
+        )
+        assert isinstance(dto.hierarchy_id, SequenceId)
+
     def test_sequencedto_and_episodedto_strictness(self):
         with pytest.raises(ValidationError, match="Expected SequenceId, got ShotId"):
             SequenceDTO(
-                id=UUID(int=7), title="bad", style="x", shots=[],
+                id=UUID(int=7), title="bad", style=SequenceStyle(image="i", music="m"), shots=[],
                 hierarchy_id=ShotId.from_str("Pr1-Ep1-Seq1-Sh1"),
             )
 
@@ -184,6 +206,16 @@ class TestStoryboardValidator:
             EpisodeDTO(
                 id=UUID(int=8), title="bad", style="x", sequences=[],
                 hierarchy_id=SequenceId.from_str("Pr1-Ep1-Seq1"),  # type: ignore[arg-type]
+            )
+
+    def test_sequencedto_rejects_plain_style_string(self):
+        with pytest.raises(ValidationError):
+            SequenceDTO(
+                id=UUID(int=11),
+                title="t",
+                style="s",  # type: ignore[arg-type]
+                shots=[],
+                hierarchy_id=SequenceId.from_str("Pr1-Ep2-Seq3"),
             )
 
 
@@ -195,7 +227,7 @@ class TestValidatorWithMocker:
         dto = ShotDTO(
             id=UUID(int=9),
             title="t",
-            style="s",
+            style=ShotStyle(voice="s"),
             text="x",
             hierarchy_id=s,  # type: ignore[arg-type]
         )
