@@ -50,5 +50,12 @@ class S3AsyncSaver:
                 ".jpeg": "image/jpeg",
                 ".webp": "image/webp",
                 ".wav": "audio/wav",
+                ".yaml": "application/x-yaml",
+                ".yml": "application/x-yaml",
             }.get(ext, "application/octet-stream")
         await self._s3.put_object(Bucket=self.bucket, Key=key, Body=data, ContentType=content_type)
+
+    async def download(self, key: str) -> bytes:
+        response = await self._s3.get_object(Bucket=self.bucket, Key=key)
+        async with response["Body"] as stream:
+            return await stream.read()
