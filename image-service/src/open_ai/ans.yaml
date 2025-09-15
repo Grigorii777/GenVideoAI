@@ -1,0 +1,161 @@
+id: ec1135b0-cffd-4563-9d3c-237af6ca872e
+title: Echoes of Rome
+style: 'Documentary style: immersive, educational, narrative arc (setup → expansion
+  → conflict → consolidation).
+
+  '
+hierarchy_id:
+  project: 0
+episodes:
+- id: 56aaef95-ff03-482f-bf55-6cb4f8dabaa9
+  title: Rise of the Republic
+  style: 'Tense and measured, linear narration, moderate editing rhythm (medium),
+    dominant color palette: earth tones, marble whites, gold accents; lighting: soft
+    daylight transitioning to dusk.
+
+    '
+  hierarchy_id:
+    project: 0
+    episode: 0
+  sequences:
+  - id: 90f22071-c86f-400b-8708-80458e855300
+    title: Foundations and Forums
+    style: 'Background music: ambient with Roman-inspired motifs, dynamics: crescendo
+      to emphasize growth, leading instruments: lyre, flute; Background image: A bustling
+      Roman forum at dawn, towering columns, stone textures, warm golden light.
+
+      '
+    hierarchy_id:
+      project: 0
+      episode: 0
+      sequence: 0
+    shots:
+    - id: 4cb59c21-2a5d-487a-8250-c807835534db
+      title: Founding myths and early Rome
+      style: 'Tone: contemplative'
+      hierarchy_id:
+        project: 0
+        episode: 0
+        sequence: 0
+        shot: 0
+      text: Легенды о Ромуле и Реме формируют образ города. Но история начинается
+        не с мифов, а с политических договорённостей между кланами. Первые шаги Рима
+        — это компромисс между богами, богатыми и воинами. Именно через такие переговоры
+        рождается идея общего дома для разных народов.
+    - id: dd8e677a-c908-47c0-8e60-39ece0a8f717
+      title: Рим и монархия
+      style: 'Tone: authoritative'
+      hierarchy_id:
+        project: 0
+        episode: 0
+        sequence: 0
+        shot: 1
+      text: На рубеже монархии и республики власть постепенно перейдет к гражданам
+        и советникам. Город растет не только за счет военной силы, но и за счет правовых
+        норм. Сохранение порядка требует выработки сложной юридической практики. В
+        итоге возникает система, которая ограничивает королевскую власть.
+    - id: e5985540-ce7f-4a2d-aa19-a5caf666bea3
+      title: Римская гражданская идентичность
+      style: 'Tone: informative'
+      hierarchy_id:
+        project: 0
+        episode: 0
+        sequence: 0
+        shot: 2
+      text: Гражданство расширяется за счет новых групп населения. Права и обязанности
+        создают ощущение общности и лояльности городу. Закон и рынок связывают людей
+        в единую экономическую сеть. Идея равенства перед законом становится принципом
+        управления.
+    - id: e1fb9710-c04c-4e49-b617-9fdc1aef7ce5
+      title: Военный порядок
+      style: 'Tone: dramatic'
+      hierarchy_id:
+        project: 0
+        episode: 0
+        sequence: 0
+        shot: 3
+      text: Легион формирует военную мощь Рима. Дисциплина и иерархия превращают солдат
+        в инструмент политики. Боевые кампании расширяют влияние города и его ресурсов.
+        Военная мощь становится основой политического и экономического роста.
+    - id: 2540b429-2686-4aef-8e18-80e7bfc9a1c5
+      title: Город как машина
+      style: 'Tone: analytical'
+      hierarchy_id:
+        project: 0
+        episode: 0
+        sequence: 0
+        shot: 4
+      text: Архитектура и инфраструктура связывают огромные территории. Дороги, акведуки
+        и городские пространства создают единый жизненный цикл. Гражданам открывается
+        доступ к товарам, идеям и культуре. Город становится лабораторией политических
+        и экономических экспериментов.
+  - id: b97a813a-11b0-4605-9f49-1daf98394fe9
+    title: Завоевания и расширение
+    style: 'Background music: orchestral with bold brass, dynamics: crescendo; leading
+      instruments: brass, percussion; Background image: A map of expanding Rome with
+      armies, the Senate in session, banners fluttering.
+
+      '
+    hierarchy_id:
+      project: 0
+      episode: 0
+      sequence: 1
+    shots:
+    - id: 116bff24-02bd-4b9d-b08c-7e6f12ab45d7
+      title: Завоевания и расширение
+      style: 'Tone: assertive'
+      hierarchy_id:
+        project: 0
+        episode: 0
+        sequence: 1
+        shot: 0
+      text: Рим продолжает расширять границы своих владений. Каждое завоевание приносит
+        новые ресурсы и проблемы управления. Это требует новых политических решений
+        и администраторов. Расширение превращается в проверку устойчивости государственных
+        институтов.
+    - id: 8c3a2dbc-2e12-46bc-b13f-f38f2caa3c46
+      title: Система правления
+      style: 'Tone: explanatory'
+      hierarchy_id:
+        project: 0
+        episode: 0
+        sequence: 1
+        shot: 1
+      text: Сенат и магистраты управляют провинциями и населением. Законы стремятся
+        балансировать между гражданами и имперскими интересами. Патриции и плебеи
+        учатся сотрудничать ради общего дела. Централизованная власть и локальные
+        автономии создают сложную систему правления.
+    - id: 5bbd5b4a-0f1c-4a0d-9766-1226f9fce194
+      title: Война и мир
+      style: 'Tone: reflective'
+      hierarchy_id:
+        project: 0
+        episode: 0
+        sequence: 1
+        shot: 2
+      text: Военные кампании защищают границы и расширяют влияние. После побед наступают
+        мирные годы, чтобы восстанавливаться экономику. Память о победах закрепляется
+        в ритуалах и памятниках. Так мир и война переплетаются в политике и обществе.
+    - id: b1a6fb4b-4297-4e23-b0c8-ad2bfc2fcc67
+      title: Закон и порядок
+      style: 'Tone: neutral'
+      hierarchy_id:
+        project: 0
+        episode: 0
+        sequence: 1
+        shot: 3
+      text: Государственный кодекс объединяет множество законов провинций. Судебная
+        система защищает граждан и контролирует власть. Прозрачность и ответственность
+        снижают риск восстаний. Закон становится основой доверия к правительству.
+    - id: 90f5fdf2-81b6-4af3-b250-28eeeebb68f0
+      title: Экономическая мощь
+      style: 'Tone: brisk'
+      hierarchy_id:
+        project: 0
+        episode: 0
+        sequence: 1
+        shot: 4
+      text: Экономика держится на сельском хозяйстве, торговле и ремеслах. Дороги
+        связывают города и провинции, ускоряя обмен. Масштабы торговли позволяют импортировать
+        и экспортировать ценности. Экономика поддерживает военную и политическую мощь
+        государства.

@@ -18,7 +18,7 @@ SequenceEntity:
     Background music: genre/mood (ambient/orchestral/electronic),
     dynamics (crescendo/stable),
     leading instruments,
-    Background image: color palette and lighting,
+    Background image: (Create a scene description for the image, colour palette and style), 
 
 ShotEntity:
   title: "Shot title"

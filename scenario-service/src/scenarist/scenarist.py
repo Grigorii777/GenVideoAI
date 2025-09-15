@@ -41,7 +41,7 @@ class ScenarioGenerator:
                     in each sequence there are 5–10 shots; 
                     in each shot there are 3–5 text sentences.
                 3) Do not add fields outside the schema.
-                4) Language: {lang}
+                4) All language: en. Shot text language: {lang}.
                 Scheme:
                     {str(schema)}
                 """
@@ -97,9 +97,9 @@ class ScenarioGenerator:
             yaml.safe_dump(data, f, allow_unicode=True, sort_keys=False)
 
 
-s_gen = ScenarioGenerator()
+# s_gen = ScenarioGenerator()
 # asyncio.run(s_gen.gen_to_file("Roman Empire", "Documentary", 600, schema=get_json_scheme_example()))
-
-a = asyncio.run(s_gen.gen("Roman Empire", "Documentary", 30, schema=get_json_scheme_example(), is_backup=True))
-pprint(a.model_dump(mode="json"))
+# a = asyncio.run(s_gen.gen("Roman Empire", "Documentary", 30, schema=get_json_scheme_example(),
+#                           is_backup=True))
+# pprint(a.model_dump(mode="json"))
 
