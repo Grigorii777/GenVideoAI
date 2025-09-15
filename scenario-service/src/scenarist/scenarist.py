@@ -42,6 +42,7 @@ class ScenarioGenerator:
                     in each shot there are 3–5 text sentences.
                 3) Do not add fields outside the schema.
                 4) All language: en. Shot text language: {lang}.
+                5) The style field describes what should be in this field. Fill it in with the appropriate data.
                 Scheme:
                     {str(schema)}
                 """
@@ -80,7 +81,10 @@ class ScenarioGenerator:
 
     async def gen(self, theme: str, style: str, duration: int, lang="ru", schema: dict = None, is_backup: bool = False, file_path: str = "ans.yaml"):
         if not is_backup:
-            ans = await self._gen(theme, style, duration, schema=schema, lang=lang)
+            if not schema:
+                ans = await self._gen(theme, style, duration, schema=get_json_scheme_example(), lang=lang)
+            else:
+                ans = await self._gen(theme, style, duration, schema=schema, lang=lang)
             data = json.loads(ans)
             self._update_dict_fields(data)
         else:

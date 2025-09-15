@@ -6,6 +6,8 @@
       <sourceFolder url="file://$MODULE_DIR$/scenario-service/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/image-service/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tts-service/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/orchestrator/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/render-service/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/venv3.11" />
       <excludeFolder url="file://$MODULE_DIR$/venv3.12.8" />

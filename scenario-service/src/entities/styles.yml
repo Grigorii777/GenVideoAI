@@ -20,7 +20,7 @@ SequenceEntity:
       dynamics (crescendo/stable),
       leading instruments
     image: >
-      Create a scene description for the background image, colour palette and style
+      Create a scene description for the background image, colour palette and style. No text.
 
 ShotEntity:
   title: "Shot title"
