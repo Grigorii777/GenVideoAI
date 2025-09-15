@@ -43,5 +43,5 @@ class TTSService:
 
 if __name__ == "__main__":
     tts = TTSService()
-    file_path = tts.synthesize("Я тут озвучиваю нормально", "test.wav")
+    file_path = tts.synthesize("I'm narrating just fine here", "test.wav")
     print(f"File saved: {file_path} ✅")

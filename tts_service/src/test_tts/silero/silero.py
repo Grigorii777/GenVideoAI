@@ -52,13 +52,13 @@ def normalize_and_speed(in_file: str, out_file: str, speed: float = 0.9, reverb:
 
 
 if __name__ == "__main__":
-    text = """Легенда о Ромуле и Реме задаёт тон ранней истории Рима.
-    Археологические данные напоминают, что город возник в ходе постепенного сосуществования латинских поселений.
-    Социальные и политические институты начали формироваться здесь, на перекрёстке торговли и обороны. 
-    Река Тибр стала главной торговой артерией и естественным рубежом для первых
-        кварталов. Ранние поселения вокруг Палатина развивались через обмен, ремесла
-        и совместные фортификационные решения. Скоро отношения между соседями закрепились
-        в городское объединение."""
+    text = """The legend of Romulus and Remus sets the tone for Rome's early history.
+    Archaeological evidence reminds us the city emerged through the gradual coexistence of Latin settlements.
+    Social and political institutions began to take shape here at the crossroads of trade and defense.
+    The Tiber River became the main trade artery and natural boundary for the first districts.
+        Early settlements around the Palatine grew through exchange, craftsmanship,
+        and joint fortification efforts. Soon relations among neighbors solidified
+        into an urban union."""
 
     audio = synthesize(text, speaker="eugene")
 

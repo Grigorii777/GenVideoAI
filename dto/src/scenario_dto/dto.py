@@ -91,7 +91,7 @@ class EpisodeId(ProjectId):
         return cls(project=int(m.group(1)), episode=int(m.group(2)))
 
     def __str__(self) -> str:
-        return f"{super().__str__()}-Ep{self.episode}"
+        return f"{super().__str__()}{self._sep}Ep{self.episode}"
 
     def parent(self) -> ProjectId:
         return ProjectId(project=self.project)
@@ -111,7 +111,7 @@ class SequenceId(EpisodeId):
         return cls(project=int(m.group(1)), episode=int(m.group(2)), sequence=int(m.group(3)))
 
     def __str__(self) -> str:
-        return f"{super().__str__()}-Seq{self.sequence}"
+        return f"{super().__str__()}{self._sep}Seq{self.sequence}"
 
     def parent(self) -> EpisodeId:
         return EpisodeId(project=self.project, episode=self.episode)
@@ -136,7 +136,7 @@ class ShotId(SequenceId):
         )
 
     def __str__(self) -> str:
-        return f"{super().__str__()}-Sh{self.shot}"
+        return f"{super().__str__()}{self._sep}Sh{self.shot}"
 
     def parent(self) -> SequenceId:
         return SequenceId(project=self.project, episode=self.episode, sequence=self.sequence)
