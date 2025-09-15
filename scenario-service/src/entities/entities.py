@@ -3,14 +3,23 @@ from pathlib import Path
 import yaml
 from uuid import UUID
 from scenario_dto.dto import (
-    ProjectDTO, EpisodeDTO, SequenceDTO, ShotDTO,
-    ProjectId, EpisodeId, SequenceId, ShotId,
+    ProjectDTO,
+    EpisodeDTO,
+    SequenceDTO,
+    ShotDTO,
+    ShotStyle,
+    SequenceStyle,
+    ProjectId,
+    EpisodeId,
+    SequenceId,
+    ShotId,
 )
 
 BASE_DIR = Path(__file__).resolve().parent
 STYLES_PATH = BASE_DIR / "styles.yml"
 
-def load_styles(path: str = STYLES_PATH) -> dict:
+
+def load_styles(path: Path = STYLES_PATH) -> dict:
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
@@ -24,7 +33,7 @@ class ShotEntity(ShotDTO):
         return cls(
             id=UUID(int=0),
             title=data["title"],
-            style=data["style"],
+            style=ShotStyle(**data["style"]),
             text="Shot text",
             hierarchy_id=ShotId(project=0, episode=0, sequence=0, shot=0),
         )
@@ -37,7 +46,7 @@ class SequenceEntity(SequenceDTO):
         return cls(
             id=UUID(int=0),
             title=data["title"],
-            style=data["style"],
+            style=SequenceStyle(**data["style"]),
             hierarchy_id=SequenceId(project=0, episode=0, sequence=0),
             shots=[ShotEntity.example()],
         )

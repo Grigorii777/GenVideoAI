@@ -14,13 +14,16 @@ EpisodeEntity:
 
 SequenceEntity:
   title: "Sequence title"
-  style: >
-    Background music: genre/mood (ambient/orchestral/electronic),
-    dynamics (crescendo/stable),
-    leading instruments,
-    Background image: (Create a scene description for the image, colour palette and style), 
+  style:
+    music: >
+      Background music: genre/mood (ambient/orchestral/electronic),
+      dynamics (crescendo/stable),
+      leading instruments
+    image: >
+      Create a scene description for the background image, colour palette and style
 
 ShotEntity:
   title: "Shot title"
-  style: >
-    Tone: (calm/ironic/expressive),
+  style:
+    voice: >
+      Tone: calm/ironic/expressive
