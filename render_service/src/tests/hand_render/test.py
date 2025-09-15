@@ -1,5 +1,4 @@
 import asyncio
-import os
 
 from scenarist.scenarist import ScenarioGenerator
 from tts_processors.silero_tts_processor import SileroTTSProcessor
@@ -17,16 +16,18 @@ async def process_all(a):
                 # synthesis
                 audio = tts.synthesize(sh.text)
 
-                raw_file = f"{sh.hierarchy_id}_raw.wav"
-                final_file = f"{sh.hierarchy_id}.wav"
+                hierarchy_id = str(sh.hierarchy_id)
 
-                # save raw audio
-                tts.save_audio(audio, raw_file)
+                # save raw audio to S3
+                raw_key = await tts.save_audio(audio, hierarchy_id, variant="raw")
 
-                # normalize, change speed, add reverb
-                tts.process_audio(raw_file, final_file, speed=0.87, reverb=True)
+                # normalize, change speed, add reverb using the raw audio from S3
+                final_key = await tts.process_audio(
+                    None, hierarchy_id, speed=0.87, reverb=True
+                )
 
-                os.remove(raw_file)
+                print("Raw key:", raw_key)
+                print("Final key:", final_key)
 
 
 async def main():
