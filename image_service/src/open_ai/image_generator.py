@@ -1,9 +1,7 @@
-import asyncio
 from pathlib import Path
 from typing import Union, List, Optional, Literal
 
 from gpt_api.chatgpt_api import ChatGPTAPIAsync
-from scenarist.scenarist import ScenarioGenerator, get_json_scheme_example
 
 
 class ImageGenerator:
@@ -14,7 +12,7 @@ class ImageGenerator:
         model: str = "gpt-image-1",
         size: Literal["1024x1024", "1024x1536", "1536x1024", "auto"] = "1024x1024",
         output_format: Literal["png", "jpeg", "webp"] = "png",
-        quality: Optional[Literal["low", "medium", "high", "auto"]] = "medium",
+        quality: Optional[Literal["low", "medium", "high", "auto"]] = "low",
         background: Optional[Literal["transparent", "opaque", "auto"]] = None,
         output_compression: Optional[int] = None,  # range: 0–100
         n: int = 1,
@@ -40,3 +38,4 @@ class ImageGenerator:
             output_path=output_path,
         )
         return result
+
