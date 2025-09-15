@@ -67,9 +67,9 @@ class SileroTTSProcessor:
 
 
 if __name__ == "__main__":
-    text = """Легенда о Ромуле и Реме задаёт тон ранней истории Рима.
-    Археологические данные напоминают, что город возник в ходе постепенного сосуществования латинских поселений.
-    Социальные и политические институты начали формироваться здесь, на перекрёстке торговли и обороны."""
+    text = """The legend of Romulus and Remus sets the tone for Rome's early history.
+    Archaeological evidence reminds us the city emerged through the gradual coexistence of Latin settlements.
+    Social and political institutions began to take shape here at the crossroads of trade and defense."""
 
     tts = SileroTTSProcessor(speaker="eugene")
 

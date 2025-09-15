@@ -2,28 +2,27 @@ import torch
 import soundfile as sf
 from transformers import VitsModel, AutoTokenizer
 
-# модель
+# model
 model_id = "facebook/mms-tts-rus"
 
-# загружаем
+# load
 model = VitsModel.from_pretrained(model_id)
 tokenizer = AutoTokenizer.from_pretrained(model_id)
 
 device = "mps" if torch.backends.mps.is_available() else "cpu"
 model = model.to(device)
 
-text = """Легенда о Ромуле и Реме задаёт тон ранней истории Рима. Археологические
-        данные напоминают, что город возник в ходе постепенного сосуществования латинских
-        поселений. Социальные и политические институты начали формироваться здесь,
-        на перекрёстке торговли и обороны."""
+text = """The legend of Romulus and Remus sets the tone for Rome's early history. Archaeological
+        evidence reminds us the city emerged through the gradual coexistence of Latin settlements.
+        Social and political institutions began to take shape here at the crossroads of trade and defense."""
 
-# преобразуем текст в токены
+# convert text to tokens
 inputs = tokenizer(text, return_tensors="pt").to(device)
 
-# генерируем аудио
+# generate audio
 with torch.no_grad():
     output = model(**inputs).waveform
 
-# сохраняем в wav
+# save to wav
 sf.write("output.wav", output.squeeze().cpu().numpy(), model.config.sampling_rate)
-print("Файл сохранён: output.wav")
+print("File saved: output.wav")
