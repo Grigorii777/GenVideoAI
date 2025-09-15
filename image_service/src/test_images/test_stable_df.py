@@ -4,17 +4,17 @@ import torch
 device = "mps"
 
 pipe = StableDiffusionPipeline.from_pretrained(
-    "stabilityai/sd-turbo",   # или "runwayml/stable-diffusion-v1-5"
+    "stabilityai/sd-turbo",   # or "runwayml/stable-diffusion-v1-5"
 ).to(device)
 
 pipe.enable_attention_slicing()
 pipe.enable_vae_slicing()
 
-# Заглушка для safety_checker
+# Stub for safety_checker
 def dummy_safety_checker(images, clip_input):
     return images, [False] * len(images)
 
-# Заглушка для feature_extractor с поддержкой .to()
+# Stub for feature_extractor with .to() support
 class DummyOutput:
     def __init__(self):
         self.pixel_values = torch.zeros(1, 3, 224, 224)
@@ -34,4 +34,4 @@ prompt = "Rome"
 image = pipe(prompt, num_inference_steps=1, height=512, width=512).images[0]
 image.save("output.png")
 
-print("✅ Сохранено в output.png")
+print("✅ Saved to output.png")

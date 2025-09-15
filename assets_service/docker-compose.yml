@@ -8,6 +8,6 @@ services:
       MINIO_ROOT_PASSWORD: minio123
     ports:
       - "9000:9000"   # S3 API
-      - "9001:9001"   # Web-консоль
+      - "9001:9001"   # Web console
     volumes:
       - ./data:/data

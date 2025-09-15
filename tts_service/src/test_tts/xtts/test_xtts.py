@@ -12,10 +12,10 @@ torch.load = _patched_load
 tts = TTS(model_name="tts_models/multilingual/multi-dataset/xtts_v2", progress_bar=True).to("mps")
 
 tts.tts_to_file(
-    text="Привет, Гриша! XTTS наконец загрузился с патчем weights_only=False.",
+    text="Hi, Grisha! XTTS finally loaded with the weights_only=False patch.",
     speaker_wav="silero_out.wav",
     language="ru",
     file_path="xtts_test.wav"
 )
 
-print("Файл сохранён: xtts_test.wav ✅")
+print("File saved: xtts_test.wav ✅")

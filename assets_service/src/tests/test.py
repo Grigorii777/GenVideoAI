@@ -11,18 +11,18 @@ s3 = boto3.client(
 )
 
 bucket = "demo"
-# создать бакет (идемпотентно)
+# create bucket (idempotent)
 try: s3.head_bucket(Bucket=bucket)
 except s3.exceptions.ClientError: s3.create_bucket(Bucket=bucket)
 
-# загрузить
+# upload object
 s3.put_object(Bucket=bucket, Key="folder/file.txt", Body=b"hello", ContentType="text/plain")
 
-# скачать
+# download object
 obj = s3.get_object(Bucket=bucket, Key="folder/file.txt")
 print(obj["Body"].read())
 
-# presigned URL (GET на 1 час)
+# presigned URL (GET for 1 hour)
 url = s3.generate_presigned_url(
     "get_object",
     Params={"Bucket": bucket, "Key": "folder/file.txt"},

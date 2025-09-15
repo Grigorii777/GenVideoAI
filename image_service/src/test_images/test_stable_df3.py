@@ -2,14 +2,14 @@
 import torch
 from diffusers import AutoPipelineForText2Image
 
-# 1) Выбери модель: v1.5 / 2.1 / SDXL
+# 1) Choose a model: v1.5 / 2.1 / SDXL
 model_id = "runwayml/stable-diffusion-v1-5"
 # model_id = "stabilityai/stable-diffusion-2-1-base"
 # model_id = "stabilityai/stable-diffusion-xl-base-1.0"
 
 device = "mps" if torch.backends.mps.is_available() else "cpu"
 
-# 2) Рекомендованные параметры по модели
+# 2) Recommended parameters per model
 H, W = 512, 512
 STEPS, CFG = 30, 5
 
@@ -17,7 +17,7 @@ prompt = ("Realism, Topic: Warhammer 40,000 The Emperor's Palace. rectilinear, p
 
 negative_prompt = "high quality"
 
-# 3) Загрузка пайплайна в FP16
+# 3) Load the pipeline in FP16
 pipe = AutoPipelineForText2Image.from_pretrained(
     model_id,
     dtype=torch.float16,
@@ -26,11 +26,11 @@ pipe = AutoPipelineForText2Image.from_pretrained(
 )
 pipe.to(device)
 
-# 4) Экономия VRAM
+# 4) Save VRAM
 pipe.enable_attention_slicing()
 pipe.vae.enable_slicing()
 pipe.vae.enable_tiling()
-# При OOM раскомментируй (будет медленнее, но стабильнее):
+# If you hit OOM uncomment (slower but more stable):
 # pipe.enable_model_cpu_offload()
 
 with torch.inference_mode():
