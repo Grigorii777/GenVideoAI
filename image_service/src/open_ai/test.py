@@ -16,7 +16,7 @@ async def run_pipeline():
     s_gen = ScenarioGenerator()
     a = await s_gen.gen("Roman Empire", "Documentary", 30, schema=get_json_scheme_example(), is_backup=True)
     img_gen = ImageGenerator()
-    async with S3AsyncSaver(bucket="demo") as saver:
+    async with S3AsyncSaver(bucket="GenVideoAI") as saver:
         tasks = []
         for ep in a.episodes:
             for seq in ep.sequences:
