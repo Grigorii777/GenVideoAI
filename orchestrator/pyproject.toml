@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orchestrator"
+version = "0.1.0"
+description = "Celery worker for coordinating multi-stage video generation"
+authors = [{ name = "GenVideoAI Team", email = "team@example.com" }]
+requires-python = ">=3.12"
+dependencies = [
+    "celery[redis]>=5.4,<6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2,<9.0",
+    "ruff>=0.5,<0.6",
+]
+
+[tool.setuptools]
+packages = ["orchestrator"]
+py-modules = ["worker"]

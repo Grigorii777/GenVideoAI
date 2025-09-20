@@ -1,0 +1,14 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "genvideo-docs"
+version = "0.1.0"
+description = "Documentation sources for the GenVideoAI platform"
+authors = [{ name = "GenVideoAI Team", email = "team@example.com" }]
+requires-python = ">=3.12"
+dependencies = [
+    "mkdocs>=1.6,<2.0",
+    "mkdocs-material>=9.5,<10.0",
+]

@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "genvideo-observability"
+version = "0.1.0"
+description = "Instrumentation helpers and dashboards for the observability stack"
+authors = [{ name = "GenVideoAI Team", email = "team@example.com" }]
+requires-python = ">=3.12"
+dependencies = [
+    "opentelemetry-sdk>=1.25,<2.0",
+    "opentelemetry-exporter-otlp>=1.25,<2.0",
+    "prometheus-client>=0.20,<1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2,<9.0",
+]

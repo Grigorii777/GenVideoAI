@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "assets-service"
+version = "0.1.0"
+description = "Async utilities for storing generated assets in object storage"
+authors = [{ name = "GenVideoAI Team", email = "team@example.com" }]
+requires-python = ">=3.12"
+dependencies = [
+    "aioboto3>=12.3,<13.0",
+    "botocore>=1.34,<2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2,<9.0",
+    "pytest-asyncio>=0.23,<1.0",
+    "moto[s3]>=5.0,<6.0",
+    "ruff>=0.5,<0.6",
+]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
