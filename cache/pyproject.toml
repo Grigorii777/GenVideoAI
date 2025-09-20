@@ -1,0 +1,18 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "genvideo-cache"
+version = "0.1.0"
+description = "Configuration and client utilities for Redis cache usage"
+authors = [{ name = "GenVideoAI Team", email = "team@example.com" }]
+requires-python = ">=3.12"
+dependencies = [
+    "redis[hiredis]>=5.0,<6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2,<9.0",
+]
